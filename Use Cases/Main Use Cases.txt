@@ -1,0 +1,5 @@
+- caching of recurring comic book requests, files and metadata (latency < milliseconds).
+- real-time messages, news feeds and binders (PUB/SUB support)
+- storage of session data (tokens, metadata, browsing history...) → scalability, persistence, time-limited keys
+- management of geospatial data: distance, journey times, points of interest in the surrounding area → datasets retailers delivery, current building sites (paris)
+- real-time data: carpooling, real-time auctions, targeted advertising, training of machine learning emodules on a large amount of data.
