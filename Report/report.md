@@ -24,6 +24,8 @@
 ## Use case
 ## Performance Analysis
 
+### Redis has an implemented method called benchmark which permit to “simulate” a multiuser query on the database in order to test the capacity and the speed of responses.  
+
       ====== PING_INLINE ======
     100000 requests completed in 1.69 seconds
     50 parallel clients
@@ -127,8 +129,4 @@
   __Neo4j__   | -Neo4j is fast.<br><br>-Neo4j has its own query language CYPHER which is very intuitive and easy to use.<br><br>-Neo4j supports API in almost every language like Java, Python, PHP, NodeJS Easy way to query data.<br><br>-Easy way to insert and store relationships.  <br><br>-Easy to visualize data in Neo4j browser. <br><br>-Easy to learn.       |  -Doesn't have native support for complex properties for nodes and relationships <br><br>-Sometimes hard to visualize complex data analyses. <br><br>-Tough to see space used. <br><br>-Tough to allocate memory or other configurations. <br><br>-not easy to configure for a large dataset graphic <br><br>-not clear for complex dataset in which more than 10 relation possible graphs are not good Also the interactive UI for a complex dataset is little bit complex 
 __Redis__ |-Easy for developers to understand. <br><br>-Reliable. With a proper multi-node configuration, it can handle failover instantly. <br><br>-Configurable uses Redis for both long-term storage and temporary expiry keys without taking on another external dependency. <br><br>-Fast tens of thousands of RPS and it doesn't skip a beat. Supports a huge variety of data types <br><br>-Easy to install Operations are atomic Multi-utility tool (used in a number of use cases)  | -Some difficulty scaling Redis without it becoming prohibitively expensive. <br><br>-Redis has very simple search capabilities, which means it’s not suitable for all use cases. <br><br>-Redis doesn't have good native support for storing data in object form and many libraries built over it return data as a string, meaning you need build your own serialization layer over it.<br><br>-Doesn’t support joins Knowledge required of Lua for stored procedures the dataset has to fit comfortably in memory 
 
-
-## Redis comparison with the others
-### Advantages
-### Inconvenients
 ## Conclusion
