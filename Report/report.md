@@ -118,6 +118,13 @@
     100.00% <= 2 milliseconds
     100.00% <= 2 milliseconds
     61957.87 requests per second
+    
+
+## *request throughput per seconde in function of the size of data* 
+![image](Data_size.png)
+
+## *Request output per second in function of the number of connections*
+![image](Connections_chart.png)
 
 
 ### Comparison pro and cons Redis and other Framework
