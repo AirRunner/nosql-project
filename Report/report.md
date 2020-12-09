@@ -90,6 +90,8 @@
     99.96% <= 2 milliseconds
     100.00% <= 2 milliseconds
     58892.82 requests per second
+ 
+## __here 100000 SET query are performed by 50 parallel users in 1.70 seconds  at a speed of 58892.82 requests/second__  
 
     ====== GET ======
     100000 requests completed in 1.55 seconds
@@ -104,6 +106,8 @@
     100.00% <= 2 milliseconds
     100.00% <= 2 milliseconds
     64683.05 requests per second
+ 
+ ## __here 100000 GET query are performed by 50 parallel users in 1.55 seconds  at a speed of 64683.05 requests/second__ 
 
     ====== INCR ======
     100000 requests completed in 1.61 seconds
