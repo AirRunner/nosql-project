@@ -77,6 +77,8 @@
     100.00% <= 7 milliseconds
     64808.82 requests per second
 
+## __here 100000 PING_BULK query are performed by 50 parallel users in 1.54 seconds  at a speed of 64808.82 requests/second__ 
+
     ====== SET ======
     100000 requests completed in 1.70 seconds
     50 parallel clients
@@ -122,6 +124,8 @@
     100.00% <= 2 milliseconds
     100.00% <= 2 milliseconds
     61957.87 requests per second
+
+## __here 100000 INCR query are performed by 50 parallel users in 1.61 seconds  at a speed of 61957.87 requests/second__ 
     
 
 ## *request throughput per seconde in function of the size of data* 
