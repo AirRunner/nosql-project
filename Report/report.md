@@ -25,6 +25,8 @@
 ## Performance Analysis
 ### Pros of Redis
 ### Cons of Redis
+void | PRO | CONS
+
 ## Redis comparison with the others
 ### Advantages
 ### Inconvenients
