@@ -24,7 +24,7 @@
 ## Use case
 ## Performance Analysis
 
-### Redis has an implemented method called benchmark which permit to “simulate” a multiuser query on the database in order to test the capacity and the speed of responses.  
+### Redis has an implemented method called benchmark which permit to “simulate” a multi user query on the database in order to test the capacity and the speed of responses.  
 
       ====== PING_INLINE ======
     100000 requests completed in 1.69 seconds
