@@ -57,6 +57,8 @@
     99.99% <= 2 milliseconds
     100.00% <= 2 milliseconds
     59101.65 requests per second
+    
+## __here 100000 PING_INLINE query are performed by 50 parallel users in 1.69 seconds  at a speed of 59101.65 requests/second__
 
     ====== PING_BULK ======
     100000 requests completed in 1.54 seconds
