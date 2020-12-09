@@ -23,6 +23,101 @@
 ## Tutorial / Main existing commands
 ## Use case
 ## Performance Analysis
+
+      ====== PING_INLINE ======
+    100000 requests completed in 1.69 seconds
+    50 parallel clients
+    3 bytes payload
+    keep alive: 1
+    host configuration "save": 900 1 300 10 60 10000
+    host configuration "appendonly": no
+    multi-thread: no
+
+    0.00% <= 0.1 milliseconds
+    0.01% <= 0.2 milliseconds
+    2.00% <= 0.3 milliseconds
+    8.97% <= 0.4 milliseconds
+    21.75% <= 0.5 milliseconds
+    37.94% <= 0.6 milliseconds
+    55.28% <= 0.7 milliseconds
+    71.61% <= 0.8 milliseconds
+    84.37% <= 0.9 milliseconds
+    91.96% <= 1.0 milliseconds
+    96.31% <= 1.1 milliseconds
+    98.51% <= 1.2 milliseconds
+    99.47% <= 1.3 milliseconds
+    99.78% <= 1.4 milliseconds
+    99.87% <= 1.5 milliseconds
+    99.92% <= 1.6 milliseconds
+    99.94% <= 1.7 milliseconds
+    99.96% <= 1.8 milliseconds
+    99.97% <= 1.9 milliseconds
+    99.99% <= 2 milliseconds
+    100.00% <= 2 milliseconds
+    59101.65 requests per second
+
+    ====== PING_BULK ======
+    100000 requests completed in 1.54 seconds
+    50 parallel clients
+    3 bytes payload
+    keep alive: 1
+    host configuration "save": 900 1 300 10 60 10000
+    host configuration "appendonly": no
+    multi-thread: no
+
+    93.22% <= 1 milliseconds
+    99.21% <= 2 milliseconds
+    99.74% <= 3 milliseconds
+    99.88% <= 4 milliseconds
+    99.94% <= 5 milliseconds
+    99.96% <= 6 milliseconds
+    99.99% <= 7 milliseconds
+    100.00% <= 7 milliseconds
+    64808.82 requests per second
+
+    ====== SET ======
+    100000 requests completed in 1.70 seconds
+    50 parallel clients
+    3 bytes payload
+    keep alive: 1
+    host configuration "save": 900 1 300 10 60 10000
+    host configuration "appendonly": no
+    multi-thread: no
+
+    91.78% <= 1 milliseconds
+    99.96% <= 2 milliseconds
+    100.00% <= 2 milliseconds
+    58892.82 requests per second
+
+    ====== GET ======
+    100000 requests completed in 1.55 seconds
+    50 parallel clients
+    3 bytes payload
+    keep alive: 1
+    host configuration "save": 900 1 300 10 60 10000
+    host configuration "appendonly": no
+    multi-thread: no
+
+    96.35% <= 1 milliseconds
+    100.00% <= 2 milliseconds
+    100.00% <= 2 milliseconds
+    64683.05 requests per second
+
+    ====== INCR ======
+    100000 requests completed in 1.61 seconds
+    50 parallel clients
+    3 bytes payload
+    keep alive: 1
+    host configuration "save": 900 1 300 10 60 10000
+    host configuration "appendonly": no
+    multi-thread: no
+
+    94.87% <= 1 milliseconds
+    100.00% <= 2 milliseconds
+    100.00% <= 2 milliseconds
+    61957.87 requests per second
+
+
 ### Pros of Redis
 ### Cons of Redis
 
