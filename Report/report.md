@@ -118,8 +118,7 @@
     61957.87 requests per second
 
 
-### Pros of Redis
-### Cons of Redis
+### Comparison pro and cons Redis and other Framework
 
 |Framwork | PRO | CONS
 ------ | ---|-----
