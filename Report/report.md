@@ -22,7 +22,7 @@
 ### Windows
 ## Tutorial / Main existing commands
 
-# 1) Easy commands #
+### 1) Easy commands ###
 
 **To start redis, we just need to put on the cmd the command redis-cli once you have installed it:**
 
@@ -32,7 +32,7 @@ C:\....>redis-cli
 
 Once the client is started, we can start using redis.
 
-## GET and SET commands ##
+#### GET and SET commands ####
 
 Redis is a tool which mainly allow to set and get a key.
 <br>**To set a key use SET and to get a key use GET.**
@@ -57,7 +57,7 @@ It will return 1 if the operation has been done successfully
 
 ![get after deletion or non-existant key](get_nil.png)
 
-## INCR and DECR commands ##
+#### INCR and DECR commands ####
 
 **Let's say we want to put a counter in a key, there is an easy command that let you do it : INCR**
 <br>You just have to put INCR key and it will increment it 1 by 1 and will return the value that has been incremented 
@@ -75,7 +75,7 @@ not to have problem ( example with a website for example : if people are connect
 Overall this first command make the management of the cache easier
 
 
-## TTL and EXPIRE ##
+#### TTL and EXPIRE ####
 
 **If we want to know the time to live of a value in redis we can use the command "TTL":**
 Example : 
@@ -92,15 +92,15 @@ In this example there are multiple things we need to know :
 All those easy command were used on easy variables types for now ( integer, String, .. ). 
 <br>**However redis has the possibility to also use Lists**
 
-# 2) Store a List in redis, basic list #
+### 2) Store a List in redis, basic list ###
 
-## RPUSH and LPUSH commands ##
+#### RPUSH and LPUSH commands ####
 
 **RPUSH means "right push"**
 <br>**LPUSH means "left push"**
 <br> Meaning that if you want to insert a value in a list from the right use RPUSH, and from the left use LPUSH
 
-## To get elements of a list, we DON'T use GET but instead we use LRANGE ##
+#### To get elements of a list, we DON'T use GET but instead we use LRANGE ####
 
 **To get all informations from a list, we use LRANGE and we can use those ways :**
 <br>1) just with LRANGE "name"
@@ -121,7 +121,7 @@ Example :
 
 ![Operations on lists](lpop.png)
 
-# 3) Store a List in redis, using SETS #
+### 3) Store a List in redis, using SETS ###
 
 Set allows to save key with value that can't appear in double. These are unique keys.
 <br>To do that we use the command SADD "name" "key". 
@@ -150,7 +150,7 @@ Example :
 ![is in set and union](union.png)
 
 
-# 4) Store a List in redis, using HASH #
+### 4) Store a List in redis, using HASH ###
 
 HASH is more of an object or a mini DB that is organised this way : 
 <br>1) an HASH has key, this key has a list of key
