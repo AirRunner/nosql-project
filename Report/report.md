@@ -6,6 +6,170 @@
 2.2. Linux / Windows via WLS *(Guillaume)*  
 2.3. Windows *(Quentin)*
 3. **Tutorial / Main existing commands** *(Quentin)*
+
+# 1) Easy commands #
+
+**To start redis, we just need to put on the cmd the command redis-cli once you have installed it:**
+
+C:\....>redis-cli
+
+    127.0.0.1:6379>
+
+Once the client is started, we can start using redis.
+
+## GET and SET commands ##
+
+Redis is a tool which mainly allow to set and get a key.
+<br>**To set a key use SET and to get a key use GET.**
+
+Example : 
+
+![get and set a key example](get-set.png)
+
+Of course this is an easy example.
+<br>**It can be more complex by adding an id on an user for example.**
+
+Example :
+
+![get and set a key, more complex example](get-set-more.png)
+
+**To delete those key you just have to use the command DEL.**
+
+![delete a key](del.png)
+
+It will return 1 if the operation has been done successfully
+<br>**If we try to get that key after the DEL command, it will always return us "nil"**
+
+![get after deletion or non-existant key](get_nil.png)
+
+## INCR and DECR commands ##
+
+**Let's say we want to put a counter in a key, there is an easy command that let you do it : INCR**
+<br>You just have to put INCR key and it will increment it 1 by 1 and will return the value that has been incremented 
+<br>If there is a lot of concurrence concerning this value and the incrementation of it, redis and this command allows the program 
+not to have problem ( example with a website for example : if people are connecting simultaneously on the website )
+<br>You also don't have to precise a value when you first create the key and the value, by default it is "0"
+<br>Example :
+
+![increment a key](incr.png)
+
+<br>**You can also decrement a value of a key with "DECR":**
+
+![decrement a key](decr.png)
+
+Overall this first command make the management of the cache easier
+
+
+## TTL and EXPIRE ##
+
+**If we want to know the time to live of a value in redis we can use the command "TTL":**
+Example : 
+
+![Lifetime of a value](ttl.png)
+
+In this example there are multiple things we need to know : 
+<br> 1) First when you create a key with values, its lifetime is infinite if the data doesn't exceed the limitation of the RAM
+<br>        That's why it will return -1 when you first ask its TTL ( -1 means infinite here, -2 means key doesn't exist )
+<br>**2) You can define the lifetime a key by simply using the command "EXPIRE" and putting the number of seconds you want it to last after**
+<br> 3) If we ask again for the TTL we see that it return the number of seconds it has left to live.
+<br> 4) If you put an expiration date on a key and you change the value of a key after it, the TTL is reset and doesn't expire anymore
+
+All those easy command were used on easy variables types for now ( integer, String, .. ). 
+<br>**However redis has the possibility to also use Lists**
+
+# 2) Store a List in redis, basic list #
+
+## RPUSH and LPUSH commands ##
+
+**RPUSH means "right push"**
+<br>**LPUSH means "left push"**
+<br> Meaning that if you want to insert a value in a list from the right use RPUSH, and from the left use LPUSH
+
+## To get elements of a list, we DON'T use GET but instead we use LRANGE ##
+
+**To get all informations from a list, we use LRANGE and we can use those ways :**
+<br>1) just with LRANGE "name"
+<br>2) with the same command and the index at the end : LRANGE "name" 0 -1 ( for all elements in the list )
+<br>3) It is indexed from 0 to n 
+
+Example : 
+
+![List example](lrange.png)
+
+There are other operations you can do on the lists suchs as : 
+<br>1) LLEN "name" : length of the list
+<br>2) LPOP (or RPOP) "name" : to delete an element right or left
+<br>3) LINDEX "name" nb : to get a value of your list at index nb
+<br> and more... ( see documentation )
+
+Example :
+
+![Operations on lists](lpop.png)
+
+# 3) Store a List in redis, using SETS #
+
+Set allows to save key with value that can't appear in double. These are unique keys.
+<br>To do that we use the command SADD "name" "key". 
+<br>You'll see that if try to add a value already in the set, the operation returns 0
+
+Example :
+
+![sadd set](setadd.png)
+
+<br>Some precisions : 
+<br>1) Sets don't have any order so we can't use LPOP or RPOP
+<br>2) to see elements of a set use : SETMEMBERS "name"
+<br>3) to delete an user use : SREM "name" "key"
+
+Example :
+
+![srem and smembers](srem.png)
+
+To check whether a key is present is the set, you can use : SISMEMBER "name" "key"
+<br>returns 0 if not present or 1 if present in the set
+<br>You can also concatenate sets using : SUNION "name" "name2"
+<br>You can also make sorted set using the command ZADD "name" "value" "key" ( same as sets but with Z instead )
+
+Example : 
+
+![is in set and union](union.png)
+
+
+# 4) Store a List in redis, using HASH #
+
+HASH is more of an object or a mini DB that is organised this way : 
+<br>1) an HASH has key, this key has a list of key
+<br>2) Each of thoses keys reprensents a value
+<br>3) Imagine a person with attributes : age,name,birthdate,...
+<br>Each of those attributes are a key of the person which is a key
+
+Example : 
+
+![hash example](hash.png)
+
+<br>You can also do all those command in one simple line using "HMSET".
+
+Example :
+
+![hash example n°2](hash2.png)
+
+<br>We can do all sorts of operations on it, one simple op is for example : 
+<br>increment a value, for our example the age of a db: 
+
+Example :
+
+![age incr](hincr.png)
+
+<br>You can get all the keys and value of a hash:
+<br>1)HKEYS "name"
+<br>2)HVALS "name" 
+
+Example : 
+
+![hkey&val](hkeyval.png)
+
+That's about it for the first commands that you need to know for using REDIS. 
+
 4. **Use case** *(Luca)*
 5. **Performance Analysis** *(Matthieu)*  
 5.1. Pros of Redis  
