@@ -53,7 +53,22 @@
 
 ## Presentation
 
-<span style="color: red">***TODO***</span>
+<span style="color: red">
+
+Since 2009, Redis (Remote Dictionary Server) appeared on the technologies market. This new open source project of DBMS (Database Management System) implementing a distributed, in memory “key-value” was created by Salvatore Sanfilippo & Pieter Noordhuis. This database is working with N0-SQL implementation.
+Today, several international compagnies are using this technology such as Twitter, GitHub, Snapchat, StackOverflow, Flickr …
+How Redis works?
+
+First of all, Redis is a database management tool which can save information in a simple format of “key - value”. All the information is stock in memory instead of the hard drive, so you can imagine the speed of data processing.  Redis offer many data structure such as a high availability (Scalability), transactions, high persistence on hard disk and the cluster supports.
+Moreover, Redis allows the management of different types of data, for example:   
+•	Strings (maximal size per strings: 512 Mo)    
+•	List   
+•	Hashes   
+•	Sets    
+•	Streams (list of strings or complex “key - value”)   
+•	…   
+This management database supports all the following languages: Python, JAVA, JavaScript, Node.js, R, C, C++, C# and so on.
+</span>
 
 See: https://redis.io/topics/persistence
 
