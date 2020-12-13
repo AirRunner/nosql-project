@@ -140,7 +140,7 @@ In the search bar, tap “Ubuntu”. Download it. (Same application as the image
 ![Ubuntu Application Windows Store](UbuntuWindowsStore.png)
 
 After downloading this application, launch it.   
-This screen should be appeared (Wait few minutes)
+This screen should appear (Wait few minutes)
 
 ![Ubuntu lauching window](UbuntuLaunching.png)
 
