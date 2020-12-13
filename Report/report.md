@@ -61,12 +61,13 @@ How Redis works?
 
 First of all, Redis is a database management tool which can save information in a simple format of “key - value”. All the information is stock in memory instead of the hard drive, so you can imagine the speed of data processing.  Redis offer many data structure such as a high availability (Scalability), transactions, high persistence on hard disk and the cluster supports.
 Moreover, Redis allows the management of different types of data, for example:   
-•	Strings (maximal size per strings: 512 Mo)    
-•	List   
-•	Hashes   
-•	Sets    
-•	Streams (list of strings or complex “key - value”)   
-•	…   
+*	Strings (maximal size per strings: 512 Mo)    
+*	List   
+*	Hashes   
+*	Sets    
+*	Streams (list of strings or complex “key - value”)   
+*	…   
+
 This management database supports all the following languages: Python, JAVA, JavaScript, Node.js, R, C, C++, C# and so on.
 </span>
 
@@ -113,11 +114,69 @@ That's it, Redis is ready to be used and maintained over time!
 
 For Linux distributions, the principle is the same as under macOS. The best is of course to use the integrated package manager, for instance `apt` or `dnf`.
 
-### Windows
+### Windows via WLS
 
-<span style="color: red">***Classic installation***</span>
+<span style="color: red">
 
-<span style="color: red">***WLS installation***</span>
+* Step 1:   
+
+Open a PowerShell window as Administrator. Run the following command:
+
+```
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+```
+
+Few seconds later, the message below appears:
+
+![PowerShellQuestion 1](PowerShellQuestion1.png)
+
+Tap : Y to restart your computer
+
+* Step 2: 
+
+Open the Windows Store application from your system.   
+In the search bar, tap “Ubuntu”. Download it. (Same application as the image below)
+
+![Ubuntu Application Windows Store](UbuntuWindowsStore.png)
+
+After downloading this application, launch it.   
+This screen should be appeared (Wait few minutes)
+
+![Ubuntu lauching window](UbuntuLaunching.png)
+
+* Step 3:
+
+Tap the following command (wait for the end of the process of each order):
+
+```
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install redis-server
+redis-cli -v
+```
+
+Restart the server, to make sure is running:
+
+```
+sudo service redis-server restart
+```
+
+* Step 4:
+
+After that, you need to go through the folder redis and source as the image below :
+
+![Image Connection to the server](ConnectionRedisServer.png)
+
+* Step 5:
+
+Open a new Ubuntu window, going through the folder redis and source as the image below:
+
+![Immage Connection to the client](ConnectionRedisServer2.png)
+
+Congratulations !  You can now use redis !
+</span>
+
+
 
 
 <div class="pagebreak"></div>
