@@ -1,34 +1,121 @@
+<style>
+	h1, h2, h3, h4, h5, div, p, ol, table {
+		font-family: CMU Serif;
+	}
+	div.pagebreak {
+		page-break-after: always;
+	}
+	#title {
+		text-align: center;
+	}
+	#logo {
+		margin-top: 30%;
+		width: 75%;
+	}
+</style>
+
+<div id="title">
+	<h1>NoSQL - Redis Database</h1>
+	<br/><p>COURTOIS Quentin – ECCHER Matthieu
+	<br/>JAOUEN Guillaume – VAIO Luca</p>
+	<p>December 15, 2020</p>
+	<img id="logo" src="redis_logo.png">
+</div>
+
+<div class="pagebreak"></div>
+
+
 # ​Table of contents 
 
-1. **Presentation** *(Guillaume)*
+1. **Presentation**
 2. **Installation**  
-2.1. Mac *(Luca)*  
-2.2. Linux / Windows via WLS *(Guillaume)*  
-2.3. Windows *(Quentin)*
-3. **Tutorial / Main existing commands** *(Quentin)*
-4. **Use case** *(Luca)*
-5. **Performance Analysis** *(Matthieu)*  
-5.1. Pros of Redis  
-5.2. Cons of Redis
-6. **Redis comparison with the others**  
-6.1. Advantages  
-6.2. Inconvenients
+2.1. macOS  
+2.2. Linux 
+2.3. Windows
+3. **Basic tutorial**  
+3.1. Easy commands  
+3.2. Lists  
+3.3. Sets  
+3.4. Hashes
+4. **Use cases**  
+4.1. Caching  
+4.2. Pub/Sub  
+4.3. Geospatial 
+5. **Performance Analysis**
+6. **When to choose Redis?**  
+6.1. Pros  
+6.2. Cons
 7. **Conclusion**
 
+
+<div class="pagebreak"></div>
+
+
 ## Presentation
+
+<span style="color: red">***TODO***</span>
+
+See: https://redis.io/topics/persistence
+
+
+<div class="pagebreak"></div>
+
+
 ## Installation
-### Mac
-### Linux / Windows via WLS
+
+First of all, you should know that Redis is a BSD-licensed software. It has been developed for POSIX systems, and is therefore fully compatible with macOS and Linux. For Windows, a version has been ported but does not include the latest updates. However, as we will see, there is a way to take advantage of it under Windows 10.
+
+### macOS
+
+The easiest and most direct way to install Redis is to compile the source code directly. The only prerequisite is the GCC compiler.
+
+```sh
+wget http://download.redis.io/redis-stable.tar.gz
+tar xvzf redis-stable.tar.gz
+cd redis-stable
+make
+```
+
+Then simply run the `redis-server` binary to start Redis.
+
+Running Redis from the command line is fine for testing, however for an application on a real server it is not a correct installation. Also, with the installation we just did Redis does not keep itself up to date.
+
+One solution is to create a system service, managing Redis automatically at startup. Under macOS, a service is done using `.plist` files.
+<br/>However, under macOS as under Linux, it is preferable to use package managers to solve these problems. To date, the best existing under macOS is Homebrew.
+
+So let's install Homebrew, then start Redis.
+
+```sh
+/bin/bash -c \
+"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew install redis
+brew services start redis
+```
+
+That's it, Redis is ready to be used and maintained over time!
+
+### Linux
+
+For Linux distributions, the principle is the same as under macOS. The best is of course to use the integrated package manager, for instance `apt` or `dnf`.
+
 ### Windows
-## Tutorial / Main existing commands
 
-### 1) Easy commands ###
+<span style="color: red">***Classic installation***</span>
 
-**To start redis, we just need to put on the cmd the command redis-cli once you have installed it:**
+<span style="color: red">***WLS installation***</span>
 
-C:\....>redis-cli
 
-    127.0.0.1:6379>
+<div class="pagebreak"></div>
+
+
+## Basic tutorial
+
+### 1. Easy commands ###
+
+**To start the Redis client, simply type the command `redis-cli` on a terminal once the installation is complete.**
+
+	$ redis-cli
+	127.0.0.1:6379>
 
 Once the client is started, we can start using redis.
 
@@ -276,9 +363,289 @@ Example :
 
 That's about it for the basic commands that you need to know for using Redis. 
 
-That's about it for the first commands that you need to know for using REDIS. 
 
-## Use case
+<div class="pagebreak"></div>
+
+
+## Use cases
+
+We have seen the basic use that Redis proposes, but let's go further and explore concrete cases in which Redis is used in industry.
+
+Indeed, Redis is still full of many useful features. So here are, in a non-exhaustive way, the most common use cases of Redis.
+
+### 1. Caching
+
+#### Why caching?
+
+As we shall see later, Redis is renowned for its extremely high performance, often with a latency of less than a millisecond. This makes it an ideal solution for caching. Indeed, caching is the act of storing data in a temporary shop for later use and faster than recalculating the data.
+
+In addition to this, as we have seen, Redis offers counter and queue functionality. All this gives Redis a prime position in a web application to store metadata and even files resulting from recurring queries. This will avoid the server having to systematically retrieve this data at the source.
+
+But that's not all! As we have seen, Redis offers persistence and expiration time features. This allows a whole host of uses, including caching of user session data, containing authentication tokens, browsing history or other associated metadata.
+<br/>Note that, moreover, a maximum cache size can be set with Redis.
+
+So we see great potential for Redis. Now let's look at an example of a use case for this caching, and the benefits it brings.
+
+In this case, and to show Redis' compatibility with various technologies, we will write our little application with Node.js.
+
+#### Use case
+
+First of all, and going through all the details, we configure our server to be able to communicate with Redis.
+<br/>You will be able to find the full code attached with this report.
+
+```js
+const listenPort = 3160;
+const app = express();
+
+const redisPort = 6379;
+const redisClient = redis.createClient(redisPort);
+```
+
+For this use case, we will use an API, called RESTCountries, that allows us to search the countries of the world according to different criteria. Here we will imagine that our application requires to know in which countries a certain language is spoken.
+
+```js
+return redisClient.get(`countries:${query}`, (err, result) => {
+    if (result) {
+        const resultJSON = JSON.parse(result);
+        return res.status(200).json(resultJSON);
+    }
+    else {
+        return axios.get(searchUrl)
+        .then(response => {
+            const responseJSON = response.data;
+            redisClient.setex(`countries:${query}`, 3600,
+                JSON.stringify({ source: 'Redis Cache', content: { ...responseJSON }, }));
+            return res.status(200).json({ source: 'Countries API',
+                content: { ...responseJSON }, });
+        })
+        .catch(err => {
+            return res.json(err);
+        });
+    }
+});
+```
+
+Here is how the server will return the response to the client. It first looks for a cache in the Redis database, and if none is found it requests the API to get the information and store it in Redis.
+<br/>When the cache is recorded, Redis is told to give it a lifetime of one hour, or 3600 seconds.
+<br/>At the beginning of the response it is indicated whether the data comes from the cache or from the API in order to find out where the data comes from.
+
+Now let's launch two successive queries with the language "es", i.e. Spanish. Note that here we have deactivated the automatic caches (see images below), to really measure the performance of Redis' caches. Let's see the results.
+
+![](without_cache.png)
+
+*<div style="text-align: center;">Request without cache</div>*
+
+![](with_cache.png)
+
+*<div style="text-align: center;">Request with cache</div>*
+
+The results are indisputable! Without caches, the request takes 190 ms, of which 176 ms is download time, which is already very fast because the API is well optimised (some could be much slower). With Redis caching, the request takes 15 ms, with only 2 ms download time!
+
+The data download time is therefore divided by 88 with Redis caching, and it could be even faster in some other use cases. Hence, if we imagine an operation requiring 10 requests, the user could receive only 20 ms of download time instead of 1.8 seconds!
+
+So we see the potential of Redis' caching. But that's not all, Redis still offers other use cases.
+
+### 2. Real time feeds
+
+#### Pub/Sub feature
+
+Many features are still offered by Redis, and here we will talk about the publication and subscription functions, called PUB/SUB.
+
+Indeed, Redis offers a service that allows you to subscribe to a stream of publications, called a "channel", and to publish content on this stream. This functionality opens up new fields of use, such as news feeds, real-time messaging, but also targeted advertising management or even dating applications such as carpooling. We later report that this last option can be enriched with a new Redis feature.
+
+It should be noted that, by default, Redis does not offer any authentication mode, in order to further accelerate its performance. As a result, for all the Redis functionalities we present, including subscriptions and publications, it is up to each software using Redis to manage data access permissions. However, it is possible to encrypt communications with Redis and require an authentication.
+
+Enough talk, let's try to implement this real-time flow management.
+
+Still in order to show the broad compatibility of Redis, we will write our script in Python here.
+
+#### Use case
+
+The Redis data stream works with channels. A channel is what is used to categorise the messages published on the pub/sub system. Channels usually have categorical names, such as `news:my_news`.
+
+What is interesting with Redis is that the channels only exist on the system when a person subscribes to them. It is therefore never necessary to "create" or "delete" channels.
+
+To subscribe to a specific channel, simply use `SUBSCRIBE` command.
+
+	127.0.0.1:6379> SUBSCRIBE news:fr
+
+Note that it is possible to use pattern-matching for channels, with `*` and `?` symbols. For example, `news:*` represents any channels beginning by `news` category. For this, use use `PSUBSCRIBE` command.
+
+Then, to find out which channels are active on a Redis server, just call the following command:
+
+	127.0.0.1:6379> PUBSUB CHANNELS
+	1) "news:fr"
+	2) "news:us"
+
+Finally, to publish a message, simply use `PUBLISH`:
+
+	127.0.0.1:6379> PUBLISH news:fr "Les carottes sont cuites."
+
+In Python, nothing could be simpler than subscribing to a feed. Here we subscribe to any feed in the `news` category, in other words a news feed.
+
+```py
+red = Redis(host='localhost', port='6379')
+
+flux = red.pubsub()
+flux.psubscribe(**{'news:*':disp_message})
+thread = flux.run_in_thread(sleep_time=0.01)
+```
+
+Here, we create a thread, which will run in the background and retrieve new messages as soon as they are published on the feed.
+<br/>At each new message, we call the function disp_message, which will simply display the new message, but we could do whatever we want in our application!
+
+Now let's publish messages on different channels.
+
+```py
+red.publish('news:fr', "Emmanuel Macron est élu président !")
+red.publish('news:us', "Joe Biden is the new president!")
+red.publish('news:us', "Not what Trump says...")
+```
+
+And this is what our programme catches:
+
+	New pub on news:fr -> Emmanuel Macron est élu président !
+	New pub on news:us -> Joe Biden is the new president!
+	New pub on news:us -> Not what Trump says...
+
+### 3. Management of geospatial data
+
+Finally, one of the most remarkable features of Redis is the management of geospatial data. In short, Redis can record and manipulate points on the earth's surface, which can be very useful for distance calculations, journey times, or for managing points of interest in the surrounding area. So we come back to our idea of carpooling application.
+
+Here, to test this functionality, we will use a dataset that is really trendy. Indeed, it's a dataset from opendata-paris, grouping the shops in Paris offering home delivery and click and collect.
+
+Firstly, as the dataset is retrieved in tabular form, we will have to parse the data to import it into Redis. Here we will give each business an identifier, then separate the data into two categories.
+
+Firstly, common data such as postcodes or type of business will be recorded in Sets, i.e. lists containing the index of the businesses concerned.
+
+Second, data specific to each business such as name and location will be recorded in Hashes.
+
+
+```py
+# Sets
+out.write(f"SADD '{ID_KEY}' {index}\n")
+out.write(f"SADD '{POSTCODE_KEY}:{fields['postcode']}' {index}\n")
+out.write(f"SADD '{TYPE_KEY}:{fields['type']}' {index}\n")
+out.write(f"SADD '{SERVICE_KEY}:{fields['service']}' {index}\n")
+
+# Hashes
+out.write(f"HSET {SHOP_KEY}:{index} id {index} name \"{fields['name']}\" description \"{fields['description']}\" phone \"{fields['phone']}\"\n")
+out.write(f"GEOADD {LOCATION_KEY} {fields['longitude']} {fields['latitude']} {index}\n")
+```
+
+In doing so, we automated the writing of Redis commands to create the data structures. For example, for business 3:
+
+	SADD 'commerces:id' 3
+	SADD 'commerces:postcode:75014' 3
+	SADD 'commerces:type:Restaurant ou traiteur' 3
+	SADD 'commerces:service:Retrait de commandes en magasin' 3
+	HSET commerces:commerce:3 id 3 name "restaurant indian house" description "Le restaurant indian house vous propose une cuisine gastronomique indienne à emporter au moins jusqu\'au 20 janvier . nous disposons du click and collect sur  notre site" phone "06 19 32 84 23"
+	GEOADD commerces:location 2.3264534795 48.8342863539 3
+
+Now we can start manipulating the data.
+
+First, let's list all businesses in the 17th arrondissement with the command seen before.
+
+```sh
+> SMEMBERS commerces:postcode:75017
+  1) "7"
+  2) "37"
+  3) "38"
+  4) "39"
+  5) "40"
+  6) "77"
+  7) "110"
+  8) "121"
+  9) "127"
+ 10) "159"
+ ...
+```
+
+Also, we can read the information of a given business.
+
+```sh
+> HGETALL commerces:commerce:3
+1) "phone"
+2) "06 19 32 84 23"
+3) "name"
+4) "restaurant indian house"
+5) "id"
+6) "3"
+7) "description"
+8) "Le restaurant indian house vous propose une cuisine gastronomique indienne \xc3\xa0 emporter au moins jusqu'au 20 janvier . nous disposons du click and collect sur  notre site"
+```
+
+Now, let's find the position of business 3:
+
+```sh
+> GEOPOS commerces:location 3
+1) 1) "2.32645422220230103"
+   2) "48.83428637998363797"
+```
+
+We can very easily get the distance between two businesses. Here there is 4.8 km between number 3 and number 17.
+
+```sh
+> GEODIST commerces:location 3 17 km
+"4.8080"
+```
+
+Even more interesting, which businesses are around number 3, at 100 m?
+
+```sh
+> GEORADIUSBYMEMBER commerces:location 3 100 m
+1) "3"
+2) "1989"
+3) "69"
+4) "683"
+5) "1501"
+6) "1604"
+7) "856"
+```
+
+If we want the last five for example, we can add the corresponding options:
+
+```sh
+> GEORADIUSBYMEMBER commerces:location 3 1 km COUNT 5 DESC
+1) "330"
+2) "163"
+3) "1847"
+4) "1620"
+5) "1485"
+```
+
+Finally, we can get mor einformation about each business found, for example the the distance from the given point and the coordinates:
+
+```sh
+> GEORADIUSBYMEMBER commerces:location 3 1 km COUNT 5 DESC WITHCOORD WITHDIST
+1) 1) "330"
+   2) "0.9862"
+   3) 1) "2.32716768980026245"
+      2) "48.82543259897407495"
+2) 1) "163"
+   2) "0.9844"
+   3) 1) "2.31632083654403687"
+      2) "48.82846919492295967"
+3) 1) "1847"
+   2) "0.9776"
+   3) 1) "2.32976943254470825"
+      2) "48.84280050835786824"
+4) 1) "1620"
+   2) "0.9776"
+   3) 1) "2.32976943254470825"
+      2) "48.84280050835786824"
+5) 1) "1485"
+   2) "0.9484"
+   3) 1) "2.32652395963668823"
+      2) "48.84281318196366328"
+```
+
+That's all about use cases. We've seen that Redis offers a lot of features, while being extremely powerful... and that's exactly what we're going to analyse now.
+
+
+<div class="pagebreak"></div>
+
+
 ## Performance Analysis
 
 As we have seen, Redis has a reputation for high performance. Let's try to test this performance and explain why.
@@ -401,6 +768,7 @@ Therfore, we see that Redis is extremely performant. This is due to the fact tha
 ***<div style="text-align: center;">Output requests per second depending on the number of connections</div>***
 
 
+<div class="pagebreak"></div>
 
 
 ## When to choose Redis?
@@ -413,6 +781,11 @@ Therfore, we see that Redis is extremely performant. This is due to the fact tha
 | **Redis** | - Easy for developers to understand. <br><br>- Reliable. With a proper multi-node configuration, it can handle failover instantly. <br><br>- Configurable uses Redis for both long-term storage and temporary expiry keys without taking on another external dependency. <br><br>- Fast tens of thousands of RPS and it doesn't skip a beat. Supports a huge variety of data types <br><br>- Easy to install Operations are atomic Multi-utility tool (used in a number of use cases) | - Some difficulty scaling Redis without it becoming prohibitively expensive. <br><br>- Redis has very simple search capabilities, which means it’s not suitable for all use cases. <br><br>- Redis doesn't have good native support for storing data in object form and many libraries built over it return data as a string, meaning you need build your own serialization layer over it.<br><br>- Doesn’t support joins Knowledge required of Lua for stored procedures the dataset has to fit comfortably in memory. |
 
 
+<div class="pagebreak"></div>
 
 
 ## Conclusion
+
+<span style="color: red">***TODO***</span>
+
+Of course, we could not present everything. We could also talk about the stream type, the distributed mode, or the integration of the Lua language directly into the Redis engine. However, this already gives a good interview of what Redis proposes.
