@@ -32,165 +32,262 @@ C:\....>redis-cli
 
 Once the client is started, we can start using redis.
 
-#### GET and SET commands ####
+#### `GET` and `SET` commands ####
 
-Redis is a tool which mainly allow to set and get a key.
-<br>**To set a key use SET and to get a key use GET.**
+In essence, Redis is a key-value store. It therefore allows SET and GET commands to be executed on a certain key.
+<br/>**To set a key use SET and to get a key use GET.**
 
 Example : 
 
-![get and set a key example](get-set.png)
+	127.0.0.1:6379> SET demo "Hello"
+	OK
+	127.0.0.1:6379> GET demo
+	"Hello"
 
 Of course this is an easy example.
-<br>**It can be more complex by adding an id on an user for example.**
+<br/>**It can be more complex by adding an id on an user for example.**
 
 Example :
 
-![get and set a key, more complex example](get-set-more.png)
+	127.0.0.1:6379> SET user:123 "Quentin Courtois"
+	OK
+	127.0.0.1:6379> GET user:123
+	"Quentin Courtois"
 
 **To delete those key you just have to use the command DEL.**
 
-![delete a key](del.png)
+	127.0.0.1:6379> DEL user:123
+	(integer) 1
 
-It will return 1 if the operation has been done successfully
-<br>**If we try to get that key after the DEL command, it will always return us "nil"**
+It will return 1 if the operation has been done successfully.
+<br/>**If we try to get that key after the DEL command, it will always return us "nil".**
 
-![get after deletion or non-existant key](get_nil.png)
+	127.0.0.1:6379> DEL user:123
+	(nil)
 
-#### INCR and DECR commands ####
+#### `INCR` and `DECR` commands ####
 
-**Let's say we want to put a counter in a key, there is an easy command that let you do it : INCR**
-<br>You just have to put INCR key and it will increment it 1 by 1 and will return the value that has been incremented 
-<br>If there is a lot of concurrence concerning this value and the incrementation of it, redis and this command allows the program 
-not to have problem ( example with a website for example : if people are connecting simultaneously on the website )
-<br>You also don't have to precise a value when you first create the key and the value, by default it is "0"
-<br>Example :
+Let's say we want to set a counter on a key. Redis can do it easily, with the command `INCR`.
+<br/>Just write `INCR <key>` and it will increment it 1 by 1 and will return the value that has been incremented.
+<br/>If there is a lot of concurrence concerning this value and its incrementation, Redis is managing it well (with a website for example : if people are connecting simultaneously).
+<br/>You also don't have to precise a value when you first create the key and the value, by default it is `0`.
+<br/>Example :
 
-![increment a key](incr.png)
+	127.0.0.1:6379> SET counter 0
+	OK
+	127.0.0.1:6379> INCR counter
+	(integer) 1
+	127.0.0.1:6379> INCR counter
+	(integer) 2
 
-<br>**You can also decrement a value of a key with "DECR":**
+<br/>**You can also decrement a value of a key with "DECR":**
 
-![decrement a key](decr.png)
+	127.0.0.1:6379> DECR counter
+	(integer) 1
+	127.0.0.1:6379> DECR counter
+	(integer) 0
+	127.0.0.1:6379> GET counter
+	"0"
 
-Overall this first command make the management of the cache easier
+Overall this first command make the management of the cache easier. <span style="color: red">***What do you mean here?***</span>
 
 
-#### TTL and EXPIRE ####
+#### `TTL` and `EXPIRE` ####
+
+Redis allows another very interesting feature, which is lifetime. Indeed, we can define a lifetime for a key, after which the key will be erased. As we will see, this is particularly useful when it comes to caching tokens.
 
 **If we want to know the time to live of a value in redis we can use the command "TTL":**
+
 Example : 
 
-![Lifetime of a value](ttl.png)
+	127.0.0.1:6379> SET user "Quentin"
+	OK
+	127.0.0.1:6379> TTL user
+	(integer) -1
+	127.0.0.1:6379> EXPIRE user 120
+	(integer) 1
+	127.0.0.1:6379> TTL user
+	(integer) 118
 
 In this example there are multiple things we need to know : 
-<br> 1) First when you create a key with values, its lifetime is infinite if the data doesn't exceed the limitation of the RAM
-<br>        That's why it will return -1 when you first ask its TTL ( -1 means infinite here, -2 means key doesn't exist )
-<br>**2) You can define the lifetime a key by simply using the command "EXPIRE" and putting the number of seconds you want it to last after**
-<br> 3) If we ask again for the TTL we see that it return the number of seconds it has left to live.
-<br> 4) If you put an expiration date on a key and you change the value of a key after it, the TTL is reset and doesn't expire anymore
 
-All those easy command were used on easy variables types for now ( integer, String, .. ). 
-<br>**However redis has the possibility to also use Lists**
+1. First when you create a key with values, its lifetime is infinite if the data doesn't exceed the limitation of the RAM.
+<br/>That is why it will return `-1` when you first ask its `TTL` (`-1` means infinite here, `-2` means key doesn't exist)
+2. **You can define the lifetime a key by simply using the command `EXPIRE` and putting the number of seconds you want it to last after**
+3. If we ask again for the TTL we see that it return the number of seconds it has left to live.
+4. If you put an expiration date on a key and you change the value of a key after it, the `TTL` is reset and does not expire anymore.
 
-### 2) Store a List in redis, basic list ###
+All those easy command were used on easy variables types for now (`integer`, `String`). 
+<br/>**However redis has the possibility to also use lists.**
 
-#### RPUSH and LPUSH commands ####
+### 2. Store a `List` in Redis, basic list ###
 
-**RPUSH means "right push"**
-<br>**LPUSH means "left push"**
-<br> Meaning that if you want to insert a value in a list from the right use RPUSH, and from the left use LPUSH
+#### `RPUSH` and `LPUSH` commands ####
 
-#### To get elements of a list, we DON'T use GET but instead we use LRANGE ####
+`RPUSH` means "right push"
+<br/>`LPUSH` means "left push"
 
-**To get all informations from a list, we use LRANGE and we can use those ways :**
-<br>1) just with LRANGE "name"
-<br>2) with the same command and the index at the end : LRANGE "name" 0 -1 ( for all elements in the list )
-<br>3) It is indexed from 0 to n 
+Meaning that if you want to insert a value in a list from the right use `RPUSH`, and from the left use `LPUSH`.
+
+To get elements of a list, we do not use `GET` but instead we use `LRANGE`:
+
+1. Just with `LRANGE "name"`
+2. With the same command and the index at the end : `LRANGE "name" 0 -1` (for all elements in the list. It is indexed from 0 to n)
 
 Example : 
 
-![List example](lrange.png)
+	127.0.0.1:6379> RPUSH nosqltuto "mongodb"
+	(integer) 1
+	127.0.0.1:6379> LPUSH nosqltuto "cassandra"
+	(integer) 2
+	127.0.0.1:6379> LRANGE nosqltuto 0 -1
+	1) "cassandra"
+	2) "mongodb"
+	127.0.0.1:6379> LRANGE nosqltuto 0 1
+	1) "cassandra"
+	2) "mongodb"
+	127.0.0.1:6379> LRANGE nosqltuto 0 0
+	1) "cassandra"
 
 There are other operations you can do on the lists suchs as : 
-<br>1) LLEN "name" : length of the list
-<br>2) LPOP (or RPOP) "name" : to delete an element right or left
-<br>3) LINDEX "name" nb : to get a value of your list at index nb
-<br> and more... ( see documentation )
+
+1. `LLEN "name"` : length of the list
+2. `LPOP` (or `RPOP`) `"name"` : to delete an element right or left
+3. `LINDEX "name" nb` : to get a value of your list at index nb
+
+and more... (see the [documentation](https://redis.io/documentation))
 
 Example :
 
-![Operations on lists](lpop.png)
+	127.0.0.1:6379> LLEN nosqltuto
+	(integer) 2
+	127.0.0.1:6379> LPOP nosqltuto
+	"cassandra"
+	127.0.0.1:6379> LRANGE nosqltuto 0 -1
+	1) "mongodb"
+	127.0.0.1:6379> RPOP nosqltuto
+	"mongodb"
+	127.0.0.1:6379> LRANGE nosqltuto 0 -1
+	(empty list or set)
+	127.0.0.1:6379> LLEN nosqltuto
+	(integer) 0
 
-### 3) Store a List in redis, using SETS ###
+### 3. Store a list in Redis using `Sets` ###
 
-Set allows to save key with value that can't appear in double. These are unique keys.
-<br>To do that we use the command SADD "name" "key". 
-<br>You'll see that if try to add a value already in the set, the operation returns 0
+With Redis, a set allows to save a key with value that cannot appear in double. These are unique keys.
+<br/>To do that we use the command `SADD "name" "key"`. 
+<br/>You'll see that when trying to add a value already existing in the set, the operation returns `0`.
 
 Example :
 
-![sadd set](setadd.png)
+	127.0.0.1:6379> SADD nosql "cassandra"
+	(integer) 1
+	127.0.0.1:6379> SADD nosql "mongodb"
+	(integer) 1
+	127.0.0.1:6379> SADD nosql "mongodb"
+	(integer) 0
 
-<br>Some precisions : 
-<br>1) Sets don't have any order so we can't use LPOP or RPOP
-<br>2) to see elements of a set use : SETMEMBERS "name"
-<br>3) to delete an user use : SREM "name" "key"
+Some precisions : 
+
+1. Sets don't have any order so we can't use `LPOP` or `RPOP`
+2. To see elements of a set use : `SETMEMBERS "name"`
+3. To delete an user use : `SREM "name" "key"`
 
 Example :
 
-![srem and smembers](srem.png)
+	127.0.0.1:6379> SMEMBERS nosql
+	1) "mongodb"
+	2) "cassandra"
+	127.0.0.1:6379> SREM nosq "mongodb"
+	(integer) 1
+	127.0.0.1:6379> SMEMBERS nosql
+	1) "cassandra"
 
-To check whether a key is present is the set, you can use : SISMEMBER "name" "key"
-<br>returns 0 if not present or 1 if present in the set
-<br>You can also concatenate sets using : SUNION "name" "name2"
-<br>You can also make sorted set using the command ZADD "name" "value" "key" ( same as sets but with Z instead )
+- To check whether a key is present is the set, you can use : `SISMEMBER "name" "key"`.
+<br/>It returns `0` if not present or `1` if present in the set.
+- You can also concatenate sets using : `SUNION "name" "name2"`
+- You can also make sorted set using the command `ZADD "name" "value" "key"` (same as sets but with `Z` instead)
 
 Example : 
 
-![is in set and union](union.png)
+	127.0.0.1:6379> SISMEMBER nosql "mongodb"
+	(integer) 0
+	127.0.0.1:6379> SISMEMBER nosql "cassandra"
+	(integer) 1
+	127.0.0.1:6379> SADD nosql2 "neo4j"
+	(integer) 1
+	127.0.0.1:6379> SUNION nosql nosql2
+	1) "cassandra"
+	2) "neo4j"
 
 
-### 4) Store a List in redis, using HASH ###
+### 4. Store a list in Redis, using `Hash` ###
 
-HASH is more of an object or a mini DB that is organised this way : 
-<br>1) an HASH has key, this key has a list of key
-<br>2) Each of thoses keys reprensents a value
-<br>3) Imagine a person with attributes : age,name,birthdate,...
-<br>Each of those attributes are a key of the person which is a key
+A Hash is more of an object or a mini database that is organised this way : 
 
-Example : 
-
-![hash example](hash.png)
-
-<br>You can also do all those command in one simple line using "HMSET".
-
-Example :
-
-![hash example n°2](hash2.png)
-
-<br>We can do all sorts of operations on it, one simple op is for example : 
-<br>increment a value, for our example the age of a db: 
-
-Example :
-
-![age incr](hincr.png)
-
-<br>You can get all the keys and value of a hash:
-<br>1)HKEYS "name"
-<br>2)HVALS "name" 
+1. A Hash has key, and this key has a list of key
+2. Each of thoses keys reprensents a value
+3. Imagine a person with attributes : age, name, birthdate, ...
+<br/>Each of those attributes are a key of the person which itself is a key
 
 Example : 
 
-![hkey&val](hkeyval.png)
+	127.0.0.1:6379> HSET db:1 name "redis"
+	(integer) 1
+	127.0.0.1:6379> HSET db:1 age 11
+	(integer) 1
+	127.0.0.1:6379> HSET db:1 birthdate "2009-05-10"
+	(integer) 1
+	127.0.0.1:6379> HGETALL db:1
+	1) "name"
+	2) "redis"
+	3) "age"
+	4) "11"
+	5) "birthdate"
+	6) "2009-05-10"
+
+You can also do all those command in one simple line using `HMSET`.
+
+Example :
+
+	127.0.0.1:6379> HMSET db:2 name "cassandra" age 12 birthdate "2008-06-01"
+	OK
+
+We can do all sorts of operations on it, a simple one is incrementing a value, in our example the age of a db:
+
+	127.0.0.1:6379> HINCRBY db:2 age 10
+	(integer) 22
+
+You can get all the keys and value of a hash:
+
+1. `HKEYS "name"`
+2. `HVALS "name"`
+
+Example : 
+
+	127.0.0.1:6379> HKEYS db:1
+	1) "name"
+	2) "age"
+	3) "birthate"
+	127.0.0.1:6379> HVALS db:1
+	1) "redis"
+	2) "11"
+	3) "2009-05-10"
+
+That's about it for the basic commands that you need to know for using Redis. 
 
 That's about it for the first commands that you need to know for using REDIS. 
 
 ## Use case
 ## Performance Analysis
 
-### Redis has an implemented method called benchmark which permit to “simulate” a multi user query on the database in order to test the capacity and the speed of responses.  
+As we have seen, Redis has a reputation for high performance. Let's try to test this performance and explain why.
 
-      ====== PING_INLINE ======
+### Performance test
+
+Redis has an implemented method called benchmark which permit to "simulate" a multi user query on the database in order to test the capacity and the speed of responses. Let's try it. 
+
+    ====== PING_INLINE ======
     100000 requests completed in 1.69 seconds
     50 parallel clients
     3 bytes payload
@@ -222,7 +319,7 @@ That's about it for the first commands that you need to know for using REDIS.
     100.00% <= 2 milliseconds
     59101.65 requests per second
     
-## __here 100000 PING_INLINE query are performed by 50 parallel users in 1.69 seconds  at a speed of 59101.65 requests/second__
+Here 100000 PING_INLINE query are performed by 50 parallel users in 1.69 seconds at a speed of 59101.65 requests per second.
 
     ====== PING_BULK ======
     100000 requests completed in 1.54 seconds
@@ -243,7 +340,7 @@ That's about it for the first commands that you need to know for using REDIS.
     100.00% <= 7 milliseconds
     64808.82 requests per second
 
-## __here 100000 PING_BULK query are performed by 50 parallel users in 1.54 seconds  at a speed of 64808.82 requests/second__ 
+Here 100000 PING_BULK query are performed by 50 parallel users in 1.54 seconds at a speed of 64808.82 requests per second.
 
     ====== SET ======
     100000 requests completed in 1.70 seconds
@@ -259,7 +356,7 @@ That's about it for the first commands that you need to know for using REDIS.
     100.00% <= 2 milliseconds
     58892.82 requests per second
  
-## __here 100000 SET query are performed by 50 parallel users in 1.70 seconds  at a speed of 58892.82 requests/second__  
+Here 100000 SET query are performed by 50 parallel users in 1.70 seconds at a speed of 58892.82 requests per second.
 
     ====== GET ======
     100000 requests completed in 1.55 seconds
@@ -275,7 +372,7 @@ That's about it for the first commands that you need to know for using REDIS.
     100.00% <= 2 milliseconds
     64683.05 requests per second
  
- ## __here 100000 GET query are performed by 50 parallel users in 1.55 seconds  at a speed of 64683.05 requests/second__ 
+Here 100000 GET query are performed by 50 parallel users in 1.55 seconds  at a speed of 64683.05 requests per second.
 
     ====== INCR ======
     100000 requests completed in 1.61 seconds
@@ -291,23 +388,31 @@ That's about it for the first commands that you need to know for using REDIS.
     100.00% <= 2 milliseconds
     61957.87 requests per second
 
-## __here 100000 INCR query are performed by 50 parallel users in 1.61 seconds  at a speed of 61957.87 requests/second__ 
-    
+Here 100000 INCR query are performed by 50 parallel users in 1.61 seconds  at a speed of 61957.87 requests per second.
 
-## *request throughput per seconde in function of the size of data* 
-![image](Data_size.png)
+Therfore, we see that Redis is extremely performant. This is due to the fact that Redis processes the data in RAM directly, which gives it excellent execution speed.
 
-## *Request output per second in function of the number of connections*
-![image](Connections_chart.png)
+![](data_size.png)
+
+***<div style="text-align: center;">Request throughput per second depending on the size of the data</div>***
+
+![](connections_chart.png)
+
+***<div style="text-align: center;">Output requests per second depending on the number of connections</div>***
 
 
-### Comparison pro and cons Redis and other Framework
 
-|Framwork | PRO | CONS
------- | ---|-----
-   __Cassandra__ | - fully distributed database update nodes with rolling restarts <br><br>-Linear scalability the same application can scale from laptop to a webservice with billions of rows in a table<br><br>-Amazing performance you can get answers in milliseconds. Cassandra excels at recording, processing, and retrieving time-series data.|-Cassandra runs on the JVM and therefor may require a lot of GC tuning for read/write intensive applications.<br><br>-Requires manual periodic maintenance - for example it is recommended to run a cleanup on a regular basis.<br><br>-There are a lot of knobs and buttons to configure the system. For many cases the default configuration will be sufficient, but if it’s not - you will need significant ramp up on the inner workings of Cassandra in order to effectively tune it. 
-  __MongoDB__     | -Easy to learn you can figure out how to use MongoDB pretty fast.<br><br>-Fast performance. lots of ready-made solutions out there.<br><br>-There's a lot of support in the existing ecosystem Query syntax is pretty simple to grasp and utilize.<br><br>-Aggregate functions are powerful. Scaling options. Documentation is quite good and versioned for each release.<br><br>-Horizontally scalable database Performance is very high   | -An aggregate pipeline can be a bit overwhelming as a newcomer.<br><br>-There's still no real concept of joins with references/foreign keys, although the aggregate framework has a feature that is close. <br><br>-Database management/dev ops can still be time-consuming if rolling your own deployments.<br><br>-Doesn’t support joins Data Size is High Nesting of documents is limited Increase unnecessary usage of memory By design, joined collections tend to be much slower than in relational DB. 
-  __Neo4j__   | -Neo4j is fast.<br><br>-Neo4j has its own query language CYPHER which is very intuitive and easy to use.<br><br>-Neo4j supports API in almost every language like Java, Python, PHP, NodeJS Easy way to query data.<br><br>-Easy way to insert and store relationships.  <br><br>-Easy to visualize data in Neo4j browser. <br><br>-Easy to learn.       |  -Doesn't have native support for complex properties for nodes and relationships <br><br>-Sometimes hard to visualize complex data analyses. <br><br>-Tough to see space used. <br><br>-Tough to allocate memory or other configurations. <br><br>-not easy to configure for a large dataset graphic <br><br>-not clear for complex dataset in which more than 10 relation possible graphs are not good Also the interactive UI for a complex dataset is little bit complex 
-__Redis__ |-Easy for developers to understand. <br><br>-Reliable. With a proper multi-node configuration, it can handle failover instantly. <br><br>-Configurable uses Redis for both long-term storage and temporary expiry keys without taking on another external dependency. <br><br>-Fast tens of thousands of RPS and it doesn't skip a beat. Supports a huge variety of data types <br><br>-Easy to install Operations are atomic Multi-utility tool (used in a number of use cases)  | -Some difficulty scaling Redis without it becoming prohibitively expensive. <br><br>-Redis has very simple search capabilities, which means it’s not suitable for all use cases. <br><br>-Redis doesn't have good native support for storing data in object form and many libraries built over it return data as a string, meaning you need build your own serialization layer over it.<br><br>-Doesn’t support joins Knowledge required of Lua for stored procedures the dataset has to fit comfortably in memory 
+
+## When to choose Redis?
+
+| **Framework** | **PROS** | **CONS** |
+|---|---|---|
+| **Cassandra** | - Fully distributed database update nodes with rolling restarts<br/><br/>- Linear scalability the same application can scale from laptop to a webservice with billions of rows in a table<br><br>- Amazing performance you can get answers in milliseconds. Cassandra excels at recording, processing, and retrieving time-series data. | - Cassandra runs on the JVM and therefor may require a lot of GC tuning for read/write intensive applications.<br><br>- Requires manual periodic maintenance. For example it is recommended to run a cleanup on a regular basis.<br><br>- There are a lot of knobs and buttons to configure the system. For many cases the default configuration will be sufficient, but if it’s not - you will need significant ramp up on the inner workings of Cassandra in order to effectively tune it. |
+| **MongoDB** | - Easy to learn you can figure out how to use MongoDB pretty fast.<br><br>- Fast performance. lots of ready-made solutions out there.<br><br>- There's a lot of support in the existing ecosystem Query syntax is pretty simple to grasp and utilize.<br><br>- Aggregate functions are powerful. Scaling options. Documentation is quite good and versioned for each release.<br><br>- Horizontally scalable database Performance is very high | - An aggregate pipeline can be a bit overwhelming as a newcomer.<br><br>- There's still no real concept of joins with references/foreign keys, although the aggregate framework has a feature that is close. <br><br>- Database management/dev ops can still be time-consuming if rolling your own deployments.<br><br>- Doesn’t support joins Data Size is High Nesting of documents is limited Increase unnecessary usage of memory By design, joined collections tend to be much slower than in relational DB. |
+| **Neo4j** | - Neo4j is fast.<br><br>- Neo4j has its own query language CYPHER which is very intuitive and easy to use.<br><br>- Neo4j supports API in almost every language like Java, Python, PHP, NodeJS Easy way to query data.<br><br>- Easy way to insert and store relationships.  <br><br>- Easy to visualize data in Neo4j browser. <br><br>- Easy to learn. | - Doesn't have native support for complex properties for nodes and relationships <br><br>- Sometimes hard to visualize complex data analyses. <br><br>- Tough to see space used. <br><br>- Tough to allocate memory or other configurations. <br><br>- not easy to configure for a large dataset graphic <br><br>- not clear for complex dataset in which more than 10 relation possible graphs are not good Also the interactive UI for a complex dataset is little bit complex. |
+| **Redis** | - Easy for developers to understand. <br><br>- Reliable. With a proper multi-node configuration, it can handle failover instantly. <br><br>- Configurable uses Redis for both long-term storage and temporary expiry keys without taking on another external dependency. <br><br>- Fast tens of thousands of RPS and it doesn't skip a beat. Supports a huge variety of data types <br><br>- Easy to install Operations are atomic Multi-utility tool (used in a number of use cases) | - Some difficulty scaling Redis without it becoming prohibitively expensive. <br><br>- Redis has very simple search capabilities, which means it’s not suitable for all use cases. <br><br>- Redis doesn't have good native support for storing data in object form and many libraries built over it return data as a string, meaning you need build your own serialization layer over it.<br><br>- Doesn’t support joins Knowledge required of Lua for stored procedures the dataset has to fit comfortably in memory. |
+
+
+
 
 ## Conclusion
