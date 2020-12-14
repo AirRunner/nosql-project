@@ -880,6 +880,10 @@ Therfore, we see that Redis is extremely performant. This is due to the fact tha
 
 ## Conclusion
 
-<span style="color: red">***TODO***</span>
+To conclude, we have seen that Redis is a very paricular database system.
+
+It offers completely new functionalities compared to other database systems, such as the management of temporary keys, publication channels or geospatial data. In addition, it is an extremely powerful and easy-to-use system.
+
+However, it is not a solution for very large databases without being very expensive. Redis does not offer advanced functions such as joins or stored procedures, though this can still be done using the Lua language, if required. In reality, Redis often complements other databases, to support a cached application for example.
 
 Of course, we could not present everything. We could also talk about the stream type, the distributed mode, or the integration of the Lua language directly into the Redis engine. However, this already gives a good interview of what Redis proposes.
