@@ -31,8 +31,8 @@
 2. **Installation**  
 2.1. macOS  
 2.2. Linux  
-2.3. Windows via WSL  
-2.4. Windows
+2.3. Windows  
+2.4. Windows via WSL
 3. **Basic tutorial**  
 3.1. Easy commands  
 3.2. Lists  
@@ -274,7 +274,7 @@ Example :
 
 Redis allows another very interesting feature, which is lifetime. Indeed, we can define a lifetime for a key, after which the key will be erased. As we will see, this is particularly useful when it comes to caching tokens.
 
-**If we want to know the time to live of a value in redis we can use the command "TTL":**
+**If we want to know the time to live of a value in redis we can use the command `TTL`:**
 
 Example : 
 
@@ -603,7 +603,9 @@ And this is what our programme catches:
 
 Finally, one of the most remarkable features of Redis is the management of geospatial data. In short, Redis can record and manipulate points on the earth's surface, which can be very useful for distance calculations, journey times, or for managing points of interest in the surrounding area. So we come back to our idea of carpooling application.
 
-Here, to test this functionality, we will use a dataset that is really trendy. Indeed, it's a dataset from opendata-paris, grouping the shops in Paris offering home delivery and click and collect.
+Here, to test this functionality, we will use a dataset that is really trendy. Indeed, it's a dataset from opendata-paris, grouping the shops in Paris offering home delivery and click and collect. Here is a map of the dataset:
+
+![](commerces_map.png)
 
 Firstly, as the dataset is retrieved in tabular form, we will have to parse the data to import it into Redis. Here we will give each business an identifier, then separate the data into two categories.
 
