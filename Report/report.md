@@ -1,5 +1,5 @@
 <style>
-	h1, h2, h3, h4, h5, div, p, ol, table {
+	h1, h2, h3, h4, h5, div, p, ul, ol, table {
 		font-family: CMU Serif;
 	}
 	div.pagebreak {
@@ -30,8 +30,9 @@
 1. **Presentation**
 2. **Installation**  
 2.1. macOS  
-2.2. Linux 
-2.3. Windows
+2.2. Linux  
+2.3. Windows via WSL  
+2.4. Windows
 3. **Basic tutorial**  
 3.1. Easy commands  
 3.2. Lists  
@@ -53,25 +54,30 @@
 
 ## Presentation
 
-<span style="color: red">
-
-Since 2009, Redis (Remote Dictionary Server) appeared on the technologies market. This new open source project of DBMS (Database Management System) implementing a distributed, in memory “key-value” was created by Salvatore Sanfilippo & Pieter Noordhuis. This database is working with N0-SQL implementation.
-Today, several international compagnies are using this technology such as Twitter, GitHub, Snapchat, StackOverflow, Flickr …
+Since 2009, Redis (Remote Dictionary Server) appeared on the technologies market. This new open source project of DBMS (Database Management System) implementing a distributed, in memory “key-value” was created by Salvatore Sanfilippo and Pieter Noordhuis. This database is working with NoSQL implementation.
+Today, several international compagnies are using this technology such as Twitter, GitHub, Snapchat, StackOverflow, Flickr…
 How Redis works?
 
-First of all, Redis is a database management tool which can save information in a simple format of “key - value”. All the information is stock in memory instead of the hard drive, so you can imagine the speed of data processing.  Redis offer many data structure such as a high availability (Scalability), transactions, high persistence on hard disk and the cluster supports.
-Moreover, Redis allows the management of different types of data, for example:   
-*	Strings (maximal size per strings: 512 Mo)    
-*	List   
-*	Hashes   
-*	Sets    
-*	Streams (list of strings or complex “key - value”)   
-*	…   
+First of all, Redis is a database management tool which can save information in a simple “key - value” format. All the information is stored in memory instead of the hard drive, so you can imagine the speed of data processing. Redis offers many data structures such as a high availability (scalability), transactions, high persistence on hard disk and cluster supports.
 
-This management database supports all the following languages: Python, JAVA, JavaScript, Node.js, R, C, C++, C# and so on.
-</span>
+Moreover, Redis allows the management of different types of data, mainly:   
 
-See: https://redis.io/topics/persistence
+*	Strings (maximal size per strings: 512 Mo)
+*	Lists
+*	Hashes
+*	Sets
+*	Streams (list of strings or complex “key - value”)
+
+This management database supports many languages, including: Python, JAVA, JavaScript, Node.js, R, C, C++ and C#.
+
+We mentioned the persistence of the data, note that this is particular with Redis since everything is managed in RAM directly. In fact, Redis provides two different persistence options:
+
+- The RDB persistence performs point-in-time snapshots of your dataset at specified intervals.
+- The AOF persistence logs every write operation received by the server, that will be played again at server startup, reconstructing the original dataset, as commands are logged using the same format as the Redis protocol itself.
+
+The persistance can be disabled completely, so the data will just exist as long as the server is running.
+
+Now let's see how to install Redis, then how it works.
 
 
 <div class="pagebreak"></div>
@@ -83,7 +89,7 @@ First of all, you should know that Redis is a BSD-licensed software. It has been
 
 ### macOS
 
-The easiest and most direct way to install Redis is to compile the source code directly. The only prerequisite is the GCC compiler.
+The easiest and most direct way to install Redis is to compile it directly from source. The only prerequisite is the GCC compiler.
 
 ```sh
 wget http://download.redis.io/redis-stable.tar.gz
@@ -92,7 +98,12 @@ cd redis-stable
 make
 ```
 
-Then simply run the `redis-server` binary to start Redis.
+Then simply run the `redis-server` binary to start Redis:
+
+```sh
+cd src/
+./redis-server
+```
 
 Running Redis from the command line is fine for testing, however for an application on a real server it is not a correct installation. Also, with the installation we just did Redis does not keep itself up to date.
 
@@ -114,69 +125,77 @@ That's it, Redis is ready to be used and maintained over time!
 
 For Linux distributions, the principle is the same as under macOS. The best is of course to use the integrated package manager, for instance `apt` or `dnf`.
 
-### Windows via WLS
+On Ubuntu, simply install `redis-server`. It will be installed as a service, of which you can change the configuration to be controlled by `systemd`.
 
-<span style="color: red">
-
-* Step 1:   
-
-Open a PowerShell window as Administrator. Run the following command:
-
-```
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
-```
-
-Few seconds later, the message below appears:
-
-![PowerShellQuestion 1](PowerShellQuestion1.png)
-
-Tap : Y to restart your computer
-
-* Step 2: 
-
-Open the Windows Store application from your system.   
-In the search bar, tap “Ubuntu”. Download it. (Same application as the image below)
-
-![Ubuntu Application Windows Store](UbuntuWindowsStore.png)
-
-After downloading this application, launch it.   
-This screen should appear (Wait few minutes)
-
-![Ubuntu lauching window](UbuntuLaunching.png)
-
-* Step 3:
-
-Tap the following command (wait for the end of the process of each order):
-
-```
+```sh
 sudo apt-get update
-sudo apt-get upgrade
 sudo apt-get install redis-server
-redis-cli -v
 ```
 
-Restart the server, to make sure is running:
-
-```
+Now you can restart the server to make sure it is running:
+	
+```sh
 sudo service redis-server restart
 ```
 
-* Step 4:
+### Windows
 
-After that, you need to go through the folder redis and source as the image below :
+Officialy, Redis is not supported on Windows system. However, there is a fork of the original Redis repository aimed to provide a Windows version of Redis. Here is how to install it.
 
-![Image Connection to the server](ConnectionRedisServer.png)
+1. **Download Redis**
+	
+	Go to this [microsoftarchive repository](https://github.com/microsoftarchive/redis/releases) and download the latest release.
+	
+2. **Launch Redis server**
+	
+	Extract the archive, and launch the `redis-server.exe` binary in the folder `src/`.
 
-* Step 5:
+Congratulations! The Redis server is launched! Now you can use Redis CLI by launching the `redis-cli.exe` binary.
 
-Open a new Ubuntu window, going through the folder redis and source as the image below:
+Keep in mind that this version of Redis is not the latest, so some features will not be supported, to install the latest version on Windows, follow the following tutorial.
 
-![Immage Connection to the client](ConnectionRedisServer2.png)
+### Windows via WLS
 
-Congratulations !  You can now use redis !
-</span>
+For the past few years, Windows 10 has been integrating a Linux kernel. This will allow us to launch the most recent version of Redis, by installing Ubuntu.
 
-
+1. **Activate Linux subsystem**
+	
+	Open a PowerShell window as Administrator. Run the following command:
+	
+	```sh
+	Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+	```
+	
+	Few seconds later, the message below appears:
+	
+	![PowerShellQuestion 1](PowerShellQuestion1.png)
+	
+	Tap : `Y` to restart your computer
+	
+2. **Install Ubuntu**
+	
+	Open the Windows Store application from your system.   
+	In the search bar, tap “Ubuntu”. Download it (Same application as the image below).
+	
+	![Ubuntu Application Windows Store](UbuntuWindowsStore.png)
+	
+	After downloading this application, launch it.
+	<br/>This screen should appear (Wait few minutes):
+	
+	![Ubuntu lauching window](UbuntuLaunching.png)
+	
+3. **Install Redis**
+	
+	Well done, you're on Ubuntu Linux! Now, the installation process is similar to that of Linux.
+	
+	In other words, in a Linux terminal, enter the following commands to install Redis :
+	
+	```sh
+	sudo apt-get update
+	sudo apt-get install redis-server
+	```
+	
+	Congratulations, you can now use Redis!
 
 
 <div class="pagebreak"></div>
@@ -186,7 +205,7 @@ Congratulations !  You can now use redis !
 
 ### 1. Easy commands ###
 
-**To start the Redis client, simply type the command `redis-cli` on a terminal once the installation is complete.**
+To start the Redis client, simply type the command `redis-cli` on a terminal once the installation is complete.
 
 	$ redis-cli
 	127.0.0.1:6379>
@@ -232,7 +251,8 @@ Let's say we want to set a counter on a key. Redis can do it easily, with the co
 <br/>Just write `INCR <key>` and it will increment it 1 by 1 and will return the value that has been incremented.
 <br/>If there is a lot of concurrence concerning this value and its incrementation, Redis is managing it well (with a website for example : if people are connecting simultaneously).
 <br/>You also don't have to precise a value when you first create the key and the value, by default it is `0`.
-<br/>Example :
+
+Example :
 
 	127.0.0.1:6379> SET counter 0
 	OK
