@@ -270,9 +270,6 @@ Example :
 	127.0.0.1:6379> GET counter
 	"0"
 
-Overall this first command make the management of the cache easier. <span style="color: red">***What do you mean here?***</span>
-
-
 #### `TTL` and `EXPIRE` ####
 
 Redis allows another very interesting feature, which is lifetime. Indeed, we can define a lifetime for a key, after which the key will be erased. As we will see, this is particularly useful when it comes to caching tokens.
