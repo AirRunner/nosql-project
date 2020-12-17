@@ -1,7 +1,7 @@
 from pandas import read_csv
 
 INPUT_FILE = "coronavirus-commercants-parisiens-livraison-a-domicile.csv"
-OUTPUT_FILE = "redis_commercants_commands.txt"
+OUTPUT_FILE = "redis_commercants_populate.txt"
 
 ID_KEY = 'commerces:id'
 NAME_KEY = 'commerces:name'
